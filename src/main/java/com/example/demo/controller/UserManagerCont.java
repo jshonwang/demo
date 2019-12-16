@@ -3,7 +3,9 @@ package com.example.demo.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.example.demo.model.UserAuto;
 import com.example.demo.model.UserInfo;
+import com.example.demo.model.UserView;
 import com.example.demo.service.impl.UserManagerService;
 import com.example.demo.utils.CodeSys;
 import com.example.demo.utils.ResultDto;
@@ -12,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,6 +29,9 @@ import java.util.List;
 public class UserManagerCont {
     @Autowired
     private UserManagerService userManagerService;
+
+    @Autowired
+    ControllerDemo controllerDemo;
 
     public static Logger logger = LoggerFactory.getLogger(UserManagerCont.class);
     public StringBuilder stringBuilder = new StringBuilder();
@@ -50,12 +56,11 @@ public class UserManagerCont {
     }
 
     @RequestMapping("/login")
-    public ResultDto loginCheck(@RequestBody UserInfo userInfo){
-        String username = userInfo.getUsername();
-        String password = userInfo.getUsername();
-
-
-        return  new ResultDto().SUCCESS("成功");
+    public ResultDto loginCheck(@RequestBody UserAuto userAuto){
+        if(userManagerService.loginLogin(userAuto.getUserName(),userAuto.getPassword())){
+            return  new ResultDto().SUCCESS("成功");
+        }
+        return new ResultDto().FAIL("登录失败");
 
     }
     @RequestMapping("/regist")
@@ -101,8 +106,19 @@ public class UserManagerCont {
             filesele.transferTo(dest);
         }
         return new ResultDto().SUCCESS("上传成功");
-
-
     }
+    @RequestMapping("/reqdemo")
+    public ResultDto requestDemo(@RequestBody UserInfo userInfo) throws Exception{
+        String coupouId = userInfo.getUsername();
+        userManagerService.saveUserInfo(userInfo);
+        return  new ResultDto().SUCCESS("成功");
+    }
+    @RequestMapping("/auth")
+    @PreAuthorize("hasAuthority('admin')")
+    public UserView authDemo(@RequestParam("username") String Username, @RequestParam("password") String Password){
+        return userManagerService.getUserByUserName(Username);
+    }
+
+
 
 }

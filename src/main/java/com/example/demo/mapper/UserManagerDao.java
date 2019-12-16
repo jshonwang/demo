@@ -1,5 +1,6 @@
 package com.example.demo.mapper;
 
+import com.example.demo.model.UserAuto;
 import com.example.demo.model.UserInfo;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -45,5 +46,10 @@ public interface UserManagerDao {
      * @return
      */
     int deleteUserByName(String username);
+
+
+    UserAuto selectOneUserAuth(String userName);
+
+
 
 }

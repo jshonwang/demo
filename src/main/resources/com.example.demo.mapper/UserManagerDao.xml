@@ -13,6 +13,14 @@
         <result column="registtime" property="registTime"></result>
         <result column="logintime" property="loginTime"></result>
     </resultMap>
+
+    <resultMap id="authUser" type="com.example.demo.model.UserAuto">
+        <result  property="userName" column="userName" javaType="java.lang.String"></result>
+        <result  property="userDescription" column="user_desc" javaType="java.lang.String"></result>
+        <result  property="password" column="password" javaType="java.lang.String"></result>
+        <collection property="roles" column="role" ofType="java.lang.String" jdbcType="VARCHAR"></collection>
+
+    </resultMap>
     <!--<select id="selectList" resultMap="UserinfoResult" parameterType="java.util.List">
         select  * from user_info t where t.username in
         <foreach index="index" item="item" separator="," collection="list">
@@ -58,4 +66,15 @@
     <delete id="deleteUserByName" parameterType="java.lang.String">
         delete from user_info where username = #{username}
     </delete>
+
+    <select id="selectOneUserAuth"  resultMap="authUser">
+        select u.username as userName,u.`password` as password,u.user_desc,
+        r.role_code as role from au_user u,au_user_role r where u.username = r.usename AND
+        u.username = #{username}
+    </select>
+
+
+
+
+
 </mapper>
